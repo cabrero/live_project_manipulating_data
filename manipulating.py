@@ -39,3 +39,14 @@ print(df)
 
 diff_df = df.groupby('Diff').count().drop(columns= ["East", "West", "Host city"]).rename(columns= {'Year': 'Count'}).sort_values('Diff', ascending= False)
 print(diff_df)
+
+def aggregate_fun(group):
+    if group.name in ['East', 'West']:
+        return group.mean()
+    else:
+        return group
+    
+print()
+df['key'] = df['Host city']
+print(df.groupby(pd.Grouper(key= "Host city")).mean())
+
