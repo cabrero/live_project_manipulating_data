@@ -10,11 +10,13 @@ def change_row(row):
     try:
         result = row['Result'].replace(',', ' ').split()
         east, west = [ int(s) for s in result if s.isdigit() ]
+        diff = abs(east - west)
     except Exception:
         print(row['Result'])
-        east, west = np.NaN, np.NaN
+        east, west, diff = np.NaN, np.NaN, np.NaN
     row['East'] = east
     row['West'] = west
+    row['Diff'] = diff
     return row
 
 tables = pd.read_html("https://en.wikipedia.org/wiki/NBA_All-Star_Game")
@@ -31,6 +33,9 @@ if df is None:
     
 df.insert(2, "East", 0)
 df.insert(3, "West", 0)
+df.insert(4, "Diff", 0)
 df = df.apply(change_row, axis= 'columns').drop(columns= ["Result", "Host arena", "Game MVP"]).dropna()
-
 print(df)
+
+diff_df = df.groupby('Diff').count().drop(columns= ["East", "West", "Host city"]).rename(columns= {'Year': 'Count'}).sort_values('Diff', ascending= False)
+print(diff_df)
